@@ -39,7 +39,7 @@ class Blc extends Command {
     const {args, flags} = this.parse(Blc);
 
     const opts: InitOpts = {
-      customPath: path.join(__dirname, 'format.json'),
+      customPath: path.join(__dirname, '../config/format.json'),
       start: args.start,
       production: flags.production,
     };

@@ -39,7 +39,8 @@
   },
   "files": [
     "/bin",
-    "/lib"
+    "/lib",
+    "/config"
   ],
   "homepage": "https://github.com/abogaart/blc",
   "keywords": [
