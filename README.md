@@ -22,7 +22,7 @@ $ npm install -g @abogaart/blc
 $ blc COMMAND
 running command...
 $ blc (-v|--version|version)
-@abogaart/blc/0.1.0 darwin-x64 node-v12.10.0
+@abogaart/blc/0.1.1 darwin-x64 node-v12.10.0
 $ blc --help [COMMAND]
 USAGE
   $ blc COMMAND
