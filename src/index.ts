@@ -1,27 +1,81 @@
-import {Command, flags} from '@oclif/command'
+import {Command, flags} from '@oclif/command';
+import {InitOpts} from 'license-checker';
 
-class Blc extends Command {
-  static description = 'describe the command here'
+import * as os from 'os';
+import * as path from 'path';
 
-  static flags = {
-    // add --version flag to show CLI version
-    version: flags.version({char: 'v'}),
-    help: flags.help({char: 'h'}),
-    // flag with a value (-n, --name=VALUE)
-    name: flags.string({char: 'n', description: 'name to print'}),
-    // flag with no value (-f, --force)
-    force: flags.boolean({char: 'f'}),
+import {findModules} from './find';
+import {copyLicenseFile, write} from './write';
+
+function toFileEntry(label: string, value: string | string[] | undefined) {
+  if (!value) {
+    return null;
   }
 
-  static args = [{name: 'file'}]
+  if (Array.isArray(value)) {
+    value = value.join(', ');
+  }
+
+  return `${label}: ${value}`;
+}
+
+class Blc extends Command {
+  static description = 'aggregate license information of your module and its dependencies'
+
+  static flags = {
+    file: flags.string({char: 'f', default: 'ADDITIONAL-LICENSES'}),
+    licenseFolder: flags.string({char: 'l', default: 'licenses'}),
+    production: flags.boolean({char: 'p'}),
+    version: flags.version({char: 'v'}),
+    help: flags.help({char: 'h'}),
+  }
+
+  static args = [
+    {name: 'start', default: process.cwd()},
+    {name: 'out', default: process.cwd()},
+  ];
 
   async run() {
-    const {args, flags} = this.parse(Blc)
+    const {args, flags} = this.parse(Blc);
 
-    const name = flags.name ?? 'world'
-    this.log(`hello ${name} from ./src/index.ts`)
-    if (args.file && flags.force) {
-      this.log(`you input --force and --file: ${args.file}`)
+    const opts: InitOpts = {
+      customPath: path.join(__dirname, 'format.json'),
+      start: args.start,
+      production: flags.production,
+    };
+
+    this.debug('Running with options', opts);
+
+    try {
+      const modules = Object.entries(await findModules(opts));
+      if (modules.length === 0) {
+        this.log('No modules found');
+        return;
+      }
+
+      let licenseFileContents = `The following NPM packages may be included in this product:${os.EOL}${os.EOL}`;
+      modules.forEach(([name, module]) => {
+        if (!module.licenseFile) {
+          this.warn(`Skipping ${name} with unknown/undefined license`);
+          return;
+        }
+
+        module.licenseFile = copyLicenseFile(module.licenseFile, flags.licenseFolder, args.out);
+
+        licenseFileContents += [
+          toFileEntry('name', module.name),
+          toFileEntry('version', `${module.version}`),
+          toFileEntry('repository', module.repository),
+          toFileEntry('copyright', (module as any).copyright),
+          toFileEntry('license', module.licenses),
+          toFileEntry('license file', module.licenseFile),
+          `${os.EOL}${'*'.repeat(60)}${os.EOL}${os.EOL}`,
+        ].filter(Boolean).join(os.EOL);
+      });
+
+      write(path.join(args.out, flags.file), licenseFileContents);
+    } catch (error) {
+      this.error(error);
     }
   }
 }
