@@ -1,7 +1,7 @@
 {
   "name": "blc",
   "description": "Aggregate license information of your module and its dependencies",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "author": "Arthur Bogaart @abogaart",
   "bin": {
     "blc": "./bin/run"
