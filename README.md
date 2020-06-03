@@ -22,7 +22,7 @@ $ npm install -g blc
 $ blc COMMAND
 running command...
 $ blc (-v|--version|version)
-blc/0.0.0 darwin-x64 node-v14.2.0
+blc/0.1.0 darwin-x64 node-v12.10.0
 $ blc --help [COMMAND]
 USAGE
   $ blc COMMAND

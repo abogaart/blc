@@ -1,5 +1,5 @@
 {
-  "name": "blc",
+  "name": "@abogaart/blc",
   "description": "Aggregate license information of your module and its dependencies",
   "version": "0.1.0",
   "author": "Arthur Bogaart @abogaart",
