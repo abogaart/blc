@@ -5,7 +5,7 @@ import * as path from 'path';
 const md5Cache: Set<string> = new Set();
 
 export function write(path: string, contents: string) {
-  jetpack.write(path, contents);
+  jetpack.write(path, contents, {});
 }
 
 export function copyLicenseFile(licenseFile: string, licenseFolder: string, out: string): string {
@@ -13,7 +13,7 @@ export function copyLicenseFile(licenseFile: string, licenseFolder: string, out:
   const licenseFilePath = path.join(licenseFolder, md5, 'LICENSE');
 
   if (!md5Cache.has(md5)) {
-    jetpack.copy(licenseFile, path.join(out, licenseFilePath));
+    jetpack.copy(licenseFile, path.join(out, licenseFilePath), {overwrite: true});
     md5Cache.add(md5);
   }
 
